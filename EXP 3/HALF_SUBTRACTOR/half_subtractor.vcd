@@ -1,0 +1,41 @@
+$date
+	Fri Aug 07 13:41:48 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module half_subtractor_tb $end
+$var wire 1 ! Difference $end
+$var wire 1 " Borrow $end
+$var reg 1 # A $end
+$var reg 1 $ B $end
+$scope module uut $end
+$var wire 1 # A $end
+$var wire 1 $ B $end
+$var wire 1 " Borrow $end
+$var wire 1 ! Difference $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+0$
+0#
+0"
+0!
+$end
+#10000
+1!
+1"
+1$
+#20000
+0"
+0$
+1#
+#30000
+0!
+1$
+#40000

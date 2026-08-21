@@ -1,0 +1,176 @@
+#! /c/Source/iverilog-install/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1110-g18392a46)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "C:\iverilog\lib\ivl\system.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_sys.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_textio.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2005_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\va_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2009.vpi";
+S_0000025c710b96e0 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_0000025c710b9870 .scope module, "priority_encoder_4to2_tb" "priority_encoder_4to2_tb" 3 3;
+ .timescale -9 -12;
+v0000025c7111f090_0 .var "I0", 0 0;
+v0000025c7111f4f0_0 .var "I1", 0 0;
+v0000025c7111f3b0_0 .var "I2", 0 0;
+v0000025c7111f590_0 .var "I3", 0 0;
+v0000025c7111fef0_0 .net "Y0", 0 0, L_0000025c71122cb0;  1 drivers
+v0000025c7111f630_0 .net "Y1", 0 0, L_0000025c710cd460;  1 drivers
+v0000025c7111f770_0 .var "expected_Y0", 0 0;
+v0000025c7111f9f0_0 .var "expected_Y1", 0 0;
+v0000025c7111fb30_0 .var "expected_valid", 0 0;
+v0000025c7111fbd0_0 .var/i "input_value", 31 0;
+v0000025c7111fdb0_0 .var/i "pass_count", 31 0;
+v0000025c7111fc70_0 .net "valid", 0 0, L_0000025c71122a10;  1 drivers
+S_0000025c711fca90 .scope module, "uut" "priority_encoder_4to2" 3 20, 4 3 0, S_0000025c710b9870;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 1 "I3";
+    .port_info 1 /INPUT 1 "I2";
+    .port_info 2 /INPUT 1 "I1";
+    .port_info 3 /INPUT 1 "I0";
+    .port_info 4 /OUTPUT 1 "Y1";
+    .port_info 5 /OUTPUT 1 "Y0";
+    .port_info 6 /OUTPUT 1 "valid";
+L_0000025c710cce40 .functor NOT 1, v0000025c7111f590_0, C4<0>, C4<0>, C4<0>;
+L_0000025c710cd2a0 .functor AND 1, L_0000025c710cce40, v0000025c7111f3b0_0, C4<1>, C4<1>;
+L_0000025c710cd460 .functor OR 1, v0000025c7111f590_0, L_0000025c710cd2a0, C4<0>, C4<0>;
+L_0000025c710ccf20 .functor NOT 1, v0000025c7111f590_0, C4<0>, C4<0>, C4<0>;
+L_0000025c710cd380 .functor NOT 1, v0000025c7111f3b0_0, C4<0>, C4<0>, C4<0>;
+L_0000025c711232d0 .functor AND 1, L_0000025c710ccf20, L_0000025c710cd380, C4<1>, C4<1>;
+L_0000025c711236c0 .functor AND 1, L_0000025c711232d0, v0000025c7111f4f0_0, C4<1>, C4<1>;
+L_0000025c71122cb0 .functor OR 1, v0000025c7111f590_0, L_0000025c711236c0, C4<0>, C4<0>;
+L_0000025c711233b0 .functor OR 1, v0000025c7111f590_0, v0000025c7111f3b0_0, C4<0>, C4<0>;
+L_0000025c71123260 .functor OR 1, L_0000025c711233b0, v0000025c7111f4f0_0, C4<0>, C4<0>;
+L_0000025c71122a10 .functor OR 1, L_0000025c71123260, v0000025c7111f090_0, C4<0>, C4<0>;
+v0000025c711f6b90_0 .net "I0", 0 0, v0000025c7111f090_0;  1 drivers
+v0000025c711f66c0_0 .net "I1", 0 0, v0000025c7111f4f0_0;  1 drivers
+v0000025c710c49a0_0 .net "I2", 0 0, v0000025c7111f3b0_0;  1 drivers
+v0000025c7111fa90_0 .net "I3", 0 0, v0000025c7111f590_0;  1 drivers
+v0000025c7111f310_0 .net "Y0", 0 0, L_0000025c71122cb0;  alias, 1 drivers
+v0000025c7111f6d0_0 .net "Y1", 0 0, L_0000025c710cd460;  alias, 1 drivers
+v0000025c7111f450_0 .net *"_ivl_0", 0 0, L_0000025c710cce40;  1 drivers
+v0000025c7111f1d0_0 .net *"_ivl_10", 0 0, L_0000025c711232d0;  1 drivers
+v0000025c7111f810_0 .net *"_ivl_12", 0 0, L_0000025c711236c0;  1 drivers
+v0000025c7111f130_0 .net *"_ivl_16", 0 0, L_0000025c711233b0;  1 drivers
+v0000025c7111fd10_0 .net *"_ivl_18", 0 0, L_0000025c71123260;  1 drivers
+v0000025c7111ff90_0 .net *"_ivl_2", 0 0, L_0000025c710cd2a0;  1 drivers
+v0000025c7111f950_0 .net *"_ivl_6", 0 0, L_0000025c710ccf20;  1 drivers
+v0000025c7111f270_0 .net *"_ivl_8", 0 0, L_0000025c710cd380;  1 drivers
+v0000025c7111f8b0_0 .net "valid", 0 0, L_0000025c71122a10;  alias, 1 drivers
+    .scope S_0000025c710b9870;
+T_0 ;
+    %vpi_call/w 3 31 "$dumpfile", "EXP 1/priority_encoder_4to2/priority_encoder_4to2.vcd" {0 0 0};
+    %vpi_call/w 3 32 "$dumpvars", 32'sb00000000000000000000000000000000, S_0000025c710b9870 {0 0 0};
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0000025c7111fdb0_0, 0, 32;
+    %vpi_call/w 3 35 "$display", "---------------------------------------------------------------" {0 0 0};
+    %vpi_call/w 3 36 "$display", " I3 I2 I1 I0 | Y1 Y0 valid | E_Y1 E_Y0 E_valid | Status" {0 0 0};
+    %vpi_call/w 3 37 "$display", "---------------------------------------------------------------" {0 0 0};
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0000025c7111fbd0_0, 0, 32;
+T_0.0 ;
+    %load/vec4 v0000025c7111fbd0_0;
+    %cmpi/s 16, 0, 32;
+    %jmp/0xz T_0.1, 5;
+    %load/vec4 v0000025c7111fbd0_0;
+    %parti/s 4, 0, 2;
+    %split/vec4 1;
+    %store/vec4 v0000025c7111f090_0, 0, 1;
+    %split/vec4 1;
+    %store/vec4 v0000025c7111f4f0_0, 0, 1;
+    %split/vec4 1;
+    %store/vec4 v0000025c7111f3b0_0, 0, 1;
+    %store/vec4 v0000025c7111f590_0, 0, 1;
+    %load/vec4 v0000025c7111f590_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.2, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111f9f0_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111f770_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111fb30_0, 0, 1;
+    %jmp T_0.3;
+T_0.2 ;
+    %load/vec4 v0000025c7111f3b0_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.4, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111f9f0_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111f770_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111fb30_0, 0, 1;
+    %jmp T_0.5;
+T_0.4 ;
+    %load/vec4 v0000025c7111f4f0_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.6, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111f9f0_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111f770_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111fb30_0, 0, 1;
+    %jmp T_0.7;
+T_0.6 ;
+    %load/vec4 v0000025c7111f090_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.8, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111f9f0_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111f770_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000025c7111fb30_0, 0, 1;
+    %jmp T_0.9;
+T_0.8 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111f9f0_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111f770_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000025c7111fb30_0, 0, 1;
+T_0.9 ;
+T_0.7 ;
+T_0.5 ;
+T_0.3 ;
+    %delay 1000, 0;
+    %load/vec4 v0000025c7111f630_0;
+    %load/vec4 v0000025c7111fef0_0;
+    %concat/vec4; draw_concat_vec4
+    %load/vec4 v0000025c7111fc70_0;
+    %concat/vec4; draw_concat_vec4
+    %load/vec4 v0000025c7111f9f0_0;
+    %load/vec4 v0000025c7111f770_0;
+    %concat/vec4; draw_concat_vec4
+    %load/vec4 v0000025c7111fb30_0;
+    %concat/vec4; draw_concat_vec4
+    %cmp/ne;
+    %jmp/0xz  T_0.10, 6;
+    %vpi_call/w 3 66 "$display", " %b  %b  %b  %b |  %b  %b    %b   |   %b     %b      %b   | FAIL", v0000025c7111f590_0, v0000025c7111f3b0_0, v0000025c7111f4f0_0, v0000025c7111f090_0, v0000025c7111f630_0, v0000025c7111fef0_0, v0000025c7111fc70_0, v0000025c7111f9f0_0, v0000025c7111f770_0, v0000025c7111fb30_0 {0 0 0};
+    %vpi_call/w 3 69 "$fatal", 32'sb00000000000000000000000000000001, "Mismatch for input %b%b%b%b", v0000025c7111f590_0, v0000025c7111f3b0_0, v0000025c7111f4f0_0, v0000025c7111f090_0 {0 0 0};
+T_0.10 ;
+    %load/vec4 v0000025c7111fdb0_0;
+    %addi 1, 0, 32;
+    %store/vec4 v0000025c7111fdb0_0, 0, 32;
+    %vpi_call/w 3 73 "$display", " %b  %b  %b  %b |  %b  %b    %b   |   %b     %b      %b   | PASS", v0000025c7111f590_0, v0000025c7111f3b0_0, v0000025c7111f4f0_0, v0000025c7111f090_0, v0000025c7111f630_0, v0000025c7111fef0_0, v0000025c7111fc70_0, v0000025c7111f9f0_0, v0000025c7111f770_0, v0000025c7111fb30_0 {0 0 0};
+    %load/vec4 v0000025c7111fbd0_0;
+    %addi 1, 0, 32;
+    %store/vec4 v0000025c7111fbd0_0, 0, 32;
+    %jmp T_0.0;
+T_0.1 ;
+    %vpi_call/w 3 78 "$display", "---------------------------------------------------------------" {0 0 0};
+    %vpi_call/w 3 79 "$display", "All %0d priority encoder input combinations passed.", v0000025c7111fdb0_0 {0 0 0};
+    %vpi_call/w 3 80 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "EXP 1/priority_encoder_4to2/priority_encoder_4to2_tb.v";
+    "EXP 1/priority_encoder_4to2/priority_encoder_4to2.v";

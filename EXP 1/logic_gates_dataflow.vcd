@@ -1,0 +1,65 @@
+$date
+	Fri Aug 21 13:04:08 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module logic_gates_dataflow_tb $end
+$var wire 1 ! XOR_GATE $end
+$var wire 1 " XNOR_GATE $end
+$var wire 1 # OR_GATE $end
+$var wire 1 $ NOT_GATE $end
+$var wire 1 % NOR_GATE $end
+$var wire 1 & NAND_GATE $end
+$var wire 1 ' BUFFER_GATE $end
+$var wire 1 ( AND_GATE $end
+$var reg 1 ) A $end
+$var reg 1 * B $end
+$scope module uut $end
+$var wire 1 ) A $end
+$var wire 1 ( AND_GATE $end
+$var wire 1 * B $end
+$var wire 1 ' BUFFER_GATE $end
+$var wire 1 & NAND_GATE $end
+$var wire 1 % NOR_GATE $end
+$var wire 1 $ NOT_GATE $end
+$var wire 1 # OR_GATE $end
+$var wire 1 " XNOR_GATE $end
+$var wire 1 ! XOR_GATE $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+0*
+0)
+0(
+0'
+1&
+1%
+1$
+0#
+1"
+0!
+$end
+#10000
+0%
+0"
+1#
+1!
+1*
+#20000
+0$
+0*
+1'
+1)
+#30000
+0&
+1"
+1(
+0!
+1*
+#40000

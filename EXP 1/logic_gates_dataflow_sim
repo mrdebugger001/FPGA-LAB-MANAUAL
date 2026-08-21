@@ -1,0 +1,98 @@
+#! /c/Source/iverilog-install/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1110-g18392a46)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "C:\iverilog\lib\ivl\system.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_sys.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_textio.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2005_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\va_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2009.vpi";
+S_0000022917e199c0 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_0000022917e1a460 .scope module, "logic_gates_dataflow_tb" "logic_gates_dataflow_tb" 3 3;
+ .timescale -9 -12;
+v0000022917e16c00_0 .var "A", 0 0;
+v0000022917e16ca0_0 .net "AND_GATE", 0 0, L_0000022917e15740;  1 drivers
+v0000022917e16d40_0 .var "B", 0 0;
+v0000022917e16de0_0 .net "BUFFER_GATE", 0 0, L_0000022917e15b30;  1 drivers
+v0000022917e16e80_0 .net "NAND_GATE", 0 0, L_0000022917e15d60;  1 drivers
+v0000022917e16f20_0 .net "NOR_GATE", 0 0, L_0000022917e15900;  1 drivers
+v0000022917e16020_0 .net "NOT_GATE", 0 0, L_0000022917e157b0;  1 drivers
+v0000022917e16200_0 .net "OR_GATE", 0 0, L_0000022917e156d0;  1 drivers
+v0000022917e160c0_0 .net "XNOR_GATE", 0 0, L_0000022917e15dd0;  1 drivers
+v0000022917e16160_0 .net "XOR_GATE", 0 0, L_0000022917e15970;  1 drivers
+S_0000022917e1a5f0 .scope module, "uut" "logic_gates_dataflow" 3 17, 4 3 0, S_0000022917e1a460;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 1 "A";
+    .port_info 1 /INPUT 1 "B";
+    .port_info 2 /OUTPUT 1 "AND_GATE";
+    .port_info 3 /OUTPUT 1 "OR_GATE";
+    .port_info 4 /OUTPUT 1 "NOT_GATE";
+    .port_info 5 /OUTPUT 1 "NAND_GATE";
+    .port_info 6 /OUTPUT 1 "NOR_GATE";
+    .port_info 7 /OUTPUT 1 "XOR_GATE";
+    .port_info 8 /OUTPUT 1 "XNOR_GATE";
+    .port_info 9 /OUTPUT 1 "BUFFER_GATE";
+L_0000022917e15740 .functor AND 1, v0000022917e16c00_0, v0000022917e16d40_0, C4<1>, C4<1>;
+L_0000022917e156d0 .functor OR 1, v0000022917e16c00_0, v0000022917e16d40_0, C4<0>, C4<0>;
+L_0000022917e157b0 .functor NOT 1, v0000022917e16c00_0, C4<0>, C4<0>, C4<0>;
+L_0000022917e15820 .functor AND 1, v0000022917e16c00_0, v0000022917e16d40_0, C4<1>, C4<1>;
+L_0000022917e15d60 .functor NOT 1, L_0000022917e15820, C4<0>, C4<0>, C4<0>;
+L_0000022917e15890 .functor OR 1, v0000022917e16c00_0, v0000022917e16d40_0, C4<0>, C4<0>;
+L_0000022917e15900 .functor NOT 1, L_0000022917e15890, C4<0>, C4<0>, C4<0>;
+L_0000022917e15970 .functor XOR 1, v0000022917e16c00_0, v0000022917e16d40_0, C4<0>, C4<0>;
+L_0000022917e15cf0 .functor XOR 1, v0000022917e16c00_0, v0000022917e16d40_0, C4<0>, C4<0>;
+L_0000022917e15dd0 .functor NOT 1, L_0000022917e15cf0, C4<0>, C4<0>, C4<0>;
+L_0000022917e15b30 .functor BUFZ 1, v0000022917e16c00_0, C4<0>, C4<0>, C4<0>;
+v0000022917e162a0_0 .net "A", 0 0, v0000022917e16c00_0;  1 drivers
+v0000022917e16660_0 .net "AND_GATE", 0 0, L_0000022917e15740;  alias, 1 drivers
+v0000022917e165c0_0 .net "B", 0 0, v0000022917e16d40_0;  1 drivers
+v0000022917e16700_0 .net "BUFFER_GATE", 0 0, L_0000022917e15b30;  alias, 1 drivers
+v0000022917e16a20_0 .net "NAND_GATE", 0 0, L_0000022917e15d60;  alias, 1 drivers
+v0000022917e167a0_0 .net "NOR_GATE", 0 0, L_0000022917e15900;  alias, 1 drivers
+v0000022917e16480_0 .net "NOT_GATE", 0 0, L_0000022917e157b0;  alias, 1 drivers
+v0000022917e16520_0 .net "OR_GATE", 0 0, L_0000022917e156d0;  alias, 1 drivers
+v0000022917e16840_0 .net "XNOR_GATE", 0 0, L_0000022917e15dd0;  alias, 1 drivers
+v0000022917e16ac0_0 .net "XOR_GATE", 0 0, L_0000022917e15970;  alias, 1 drivers
+v0000022917e16b60_0 .net *"_ivl_10", 0 0, L_0000022917e15890;  1 drivers
+v0000022917e163e0_0 .net *"_ivl_16", 0 0, L_0000022917e15cf0;  1 drivers
+v0000022917e16340_0 .net *"_ivl_6", 0 0, L_0000022917e15820;  1 drivers
+    .scope S_0000022917e1a460;
+T_0 ;
+    %vpi_call/w 3 31 "$dumpfile", "EXP 1/logic_gates_dataflow.vcd" {0 0 0};
+    %vpi_call/w 3 32 "$dumpvars", 32'sb00000000000000000000000000000000, S_0000022917e1a460 {0 0 0};
+    %vpi_call/w 3 34 "$display", "---------------------------------------------------------------" {0 0 0};
+    %vpi_call/w 3 35 "$display", " A  B | AND OR NOT NAND NOR XOR XNOR BUFFER" {0 0 0};
+    %vpi_call/w 3 36 "$display", "---------------------------------------------------------------" {0 0 0};
+    %vpi_call/w 3 37 "$monitor", " %b  %b |  %b   %b   %b    %b    %b   %b    %b     %b", v0000022917e16c00_0, v0000022917e16d40_0, v0000022917e16ca0_0, v0000022917e16200_0, v0000022917e16020_0, v0000022917e16e80_0, v0000022917e16f20_0, v0000022917e16160_0, v0000022917e160c0_0, v0000022917e16de0_0 {0 0 0};
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000022917e16c00_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000022917e16d40_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000022917e16c00_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000022917e16d40_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000022917e16c00_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0000022917e16d40_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000022917e16c00_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0000022917e16d40_0, 0, 1;
+    %delay 10000, 0;
+    %vpi_call/w 3 50 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "EXP 1\logic_gates_dataflow_tb.v";
+    "EXP 1\logic_gates_dataflow.v";

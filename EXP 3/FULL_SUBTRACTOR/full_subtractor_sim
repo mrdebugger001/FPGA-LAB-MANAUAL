@@ -1,0 +1,119 @@
+#! /c/Source/iverilog-install/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1110-g18392a46)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "C:\iverilog\lib\ivl\system.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_sys.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_textio.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2005_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\va_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2009.vpi";
+S_000001c3a4315ff0 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_000001c3a4316180 .scope module, "full_subtractor_tb" "full_subtractor_tb" 3 3;
+ .timescale -9 -12;
+v000001c3a4364590_0 .var "A", 0 0;
+v000001c3a4364090_0 .var "B", 0 0;
+v000001c3a4364a90_0 .var "Bin", 0 0;
+v000001c3a4364270_0 .net "Borrow", 0 0, L_000001c3a4304fd0;  1 drivers
+v000001c3a4364e50_0 .net "Difference", 0 0, L_000001c3a4304ef0;  1 drivers
+S_000001c3a4316310 .scope module, "uut" "full_subtractor" 3 12, 4 1 0, S_000001c3a4316180;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "A";
+    .port_info 1 /INPUT 1 "B";
+    .port_info 2 /INPUT 1 "Bin";
+    .port_info 3 /OUTPUT 1 "Difference";
+    .port_info 4 /OUTPUT 1 "Borrow";
+L_000001c3a4304e80 .functor XOR 1, v000001c3a4364590_0, v000001c3a4364090_0, C4<0>, C4<0>;
+L_000001c3a4304ef0 .functor XOR 1, L_000001c3a4304e80, v000001c3a4364a90_0, C4<0>, C4<0>;
+L_000001c3a4304d30 .functor NOT 1, v000001c3a4364590_0, C4<0>, C4<0>, C4<0>;
+L_000001c3a43050b0 .functor AND 1, L_000001c3a4304d30, v000001c3a4364090_0, C4<1>, C4<1>;
+L_000001c3a43052e0 .functor NOT 1, v000001c3a4364590_0, C4<0>, C4<0>, C4<0>;
+L_000001c3a4305430 .functor AND 1, L_000001c3a43052e0, v000001c3a4364a90_0, C4<1>, C4<1>;
+L_000001c3a4305350 .functor OR 1, L_000001c3a43050b0, L_000001c3a4305430, C4<0>, C4<0>;
+L_000001c3a4304f60 .functor AND 1, v000001c3a4364090_0, v000001c3a4364a90_0, C4<1>, C4<1>;
+L_000001c3a4304fd0 .functor OR 1, L_000001c3a4305350, L_000001c3a4304f60, C4<0>, C4<0>;
+v000001c3a42c6930_0 .net "A", 0 0, v000001c3a4364590_0;  1 drivers
+v000001c3a42c6660_0 .net "B", 0 0, v000001c3a4364090_0;  1 drivers
+v000001c3a4313f70_0 .net "Bin", 0 0, v000001c3a4364a90_0;  1 drivers
+v000001c3a4314010_0 .net "Borrow", 0 0, L_000001c3a4304fd0;  alias, 1 drivers
+v000001c3a43140b0_0 .net "Difference", 0 0, L_000001c3a4304ef0;  alias, 1 drivers
+v000001c3a4364d10_0 .net *"_ivl_0", 0 0, L_000001c3a4304e80;  1 drivers
+v000001c3a43641d0_0 .net *"_ivl_10", 0 0, L_000001c3a4305430;  1 drivers
+v000001c3a4364450_0 .net *"_ivl_12", 0 0, L_000001c3a4305350;  1 drivers
+v000001c3a4364c70_0 .net *"_ivl_14", 0 0, L_000001c3a4304f60;  1 drivers
+v000001c3a43643b0_0 .net *"_ivl_4", 0 0, L_000001c3a4304d30;  1 drivers
+v000001c3a43644f0_0 .net *"_ivl_6", 0 0, L_000001c3a43050b0;  1 drivers
+v000001c3a4364db0_0 .net *"_ivl_8", 0 0, L_000001c3a43052e0;  1 drivers
+    .scope S_000001c3a4316180;
+T_0 ;
+    %vpi_call/w 3 22 "$dumpfile", "full_subtractor.vcd" {0 0 0};
+    %vpi_call/w 3 23 "$dumpvars", 32'sb00000000000000000000000000000000, S_000001c3a4316180 {0 0 0};
+    %vpi_call/w 3 25 "$display", "A B Bin | Difference Borrow" {0 0 0};
+    %vpi_call/w 3 26 "$monitor", "%b %b  %b  |     %b        %b", v000001c3a4364590_0, v000001c3a4364090_0, v000001c3a4364a90_0, v000001c3a4364e50_0, v000001c3a4364270_0 {0 0 0};
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364590_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364090_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v000001c3a4364a90_0, 0, 1;
+    %delay 10000, 0;
+    %vpi_call/w 3 53 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "full_subtractor_tb.v";
+    "full_subtractor.v";

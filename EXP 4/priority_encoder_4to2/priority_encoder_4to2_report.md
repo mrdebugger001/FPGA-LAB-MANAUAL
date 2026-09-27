@@ -1,8 +1,8 @@
-# 4-Bit to 2-Bit Priority Encoder Using Dataflow Modeling
+# 4-Bit to 2-Bit Priority Encoder
 
 ## Aim
 
-To design and verify a 4-bit-to-2-bit priority encoder in Verilog using dataflow modeling.
+To design and verify a 4-bit to 2-bit priority encoder using Verilog dataflow modeling.
 
 ## Code
 

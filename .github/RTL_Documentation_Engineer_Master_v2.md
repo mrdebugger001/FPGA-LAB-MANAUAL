@@ -53,9 +53,35 @@ Do not invent hardware that is not implied by the RTL.
 
 ---
 
+
+# STEP 0 — MANDATORY DOCUMENTATION MODE
+
+Every invocation of this agent MUST begin by asking the user:
+
+```text
+What should I generate?
+
+1. Theory only
+2. Report only
+3. Both Theory + Report
+```
+
+Do not inspect the codebase, run simulation, generate SVG, or create any documentation
+until the user selects one of the three modes.
+
+Interpret the response exactly as follows:
+
+- `Theory only` → generate only `<project_name>_theory.md`
+- `Report only` → generate only `<project_name>_report.md`
+- `Both` → generate both files
+
+If the user's response is ambiguous, ask the question again.
+
+This requirement applies EVERY TIME the agent is invoked.
+
 # Mission
 
-Produce exactly two Markdown files:
+Produce only the documentation file(s) selected by the user:
 
 ```text
 <project_name>_report.md
@@ -87,7 +113,7 @@ Contains only:
 * Circuit Diagram
 * How It Works, Step by Step
 
-The theory file must contain a **real digital circuit schematic**, not a generic signal-flow diagram.
+When Theory is selected, the theory file must contain a **real digital circuit schematic**, not a generic signal-flow diagram.
 
 ---
 
@@ -520,35 +546,965 @@ The schematic renderer must use this structure.
 
 # REALISTIC SCHEMATIC GENERATION
 
-## Preferred rendering approach
+## MASTER SCHEMATIC ENGINE
 
-Generate the circuit as **SVG**.
+The schematic renderer is a **netlist-driven digital schematic engine**.
 
-SVG is preferred because it allows:
-
-* actual gate outlines
-* flip-flop symbols
-* input/output pins
-* signal wires
-* junction dots
-* inversion bubbles
-* clock triangles
-* labels
-* arrows
-* professional spacing
-* scalable vector graphics
-
-The SVG may be embedded directly inside:
+It must NOT work as:
 
 ```text
-<project_name>_theory.md
+draw gates
+→ draw arbitrary wires
+→ add bridges when wires collide
 ```
 
-using an inline HTML/SVG block.
+It MUST work as:
 
-This preserves the requirement of producing exactly two Markdown files.
+```text
+RTL
+↓
+Hardware Netlist
+↓
+Electrical Net Graph
+↓
+Component Graph
+↓
+Topology-Aware Placement
+↓
+Pin Assignment
+↓
+Routing Channel Assignment
+↓
+Whole-Net Routing
+↓
+Crossing Avoidance
+↓
+Junction Generation
+↓
+Label Placement
+↓
+SVG Rendering
+↓
+Schematic DRC
+↓
+PNG Preview
+↓
+Visual Validation
+↓
+Final SVG
+```
+
+The SVG coordinates are a rendering result only.
+
+**Electrical connectivity MUST come from the hardware netlist, never from coordinates.**
 
 ---
+
+# HARDWARE INTERMEDIATE REPRESENTATION
+
+Before generating the SVG, construct two linked structures.
+
+## Component Graph
+
+Every hardware component must contain:
+
+```text
+id
+type
+inputs[]
+outputs[]
+width
+height
+layer
+x
+y
+input_pins[]
+output_pins[]
+```
+
+Example:
+
+```text
+component:
+    id: AND1
+    type: AND
+    inputs:
+        - nI3
+        - I2
+    output:
+        - term1
+```
+
+## Electrical Net Graph
+
+Every signal/net must contain:
+
+```text
+name
+width
+source
+destinations[]
+fanout
+routing_channel
+junctions[]
+route[]
+```
+
+Example:
+
+```text
+net:
+    name: nI3
+    source: NOT1.OUT
+    destinations:
+        - AND1.IN0
+        - AND2.IN0
+    fanout: 2
+```
+
+The net graph is the authoritative definition of connectivity.
+
+---
+
+# NETLIST-FIRST RULE
+
+Never generate a wire directly from manually chosen SVG coordinates.
+
+Bad approach:
+
+```python
+draw_line((200,150), (800,250))
+```
+
+unless that line was produced by the routing engine from:
+
+```text
+source_pin → destination_pin
+```
+
+Correct approach:
+
+```text
+route(
+    source_net = "nI3",
+    source_pin = "NOT1.OUT",
+    destination_pin = "AND1.IN0"
+)
+```
+
+The routing engine then computes the coordinates.
+
+---
+
+# SOURCE-OF-TRUTH HIERARCHY
+
+Use this hierarchy:
+
+```text
+1. Final RTL
+2. Elaborated/synthesized structure when available
+3. Hardware intermediate representation
+4. Electrical net graph
+5. SVG geometry
+```
+
+Never reverse the hierarchy.
+
+The SVG must represent the netlist.
+
+The netlist must represent the RTL-derived hardware.
+
+---
+
+# NET EXTRACTION
+
+Identify complete electrical nets before placing components.
+
+For example:
+
+```text
+I3
+ ├── NOT3.IN
+ ├── OR_Y1.IN0
+ ├── OR_Y0.IN0
+ └── OR_VALID.IN0
+```
+
+This is ONE net.
+
+Do not treat these as four unrelated wires.
+
+Likewise:
+
+```text
+nI3
+ ├── AND_Y1.IN0
+ └── AND_Y0.IN0
+```
+
+is one fan-out net.
+
+---
+
+# FAN-OUT TREE GENERATION
+
+For every net with more than one destination:
+
+1. Create one source trunk.
+2. Select one branch/junction point.
+3. Create branches from that trunk.
+4. Route each branch to its destination pin.
+5. Minimize bends.
+6. Keep the trunk outside unrelated logic wherever possible.
+
+Example:
+
+```text
+                 ┌────────────► destination A
+                 │
+SOURCE ──────●───┼────────────► destination B
+             │   │
+             │   └────────────► destination C
+             │
+             └──────────────── destination D
+```
+
+Use ONE junction for the fan-out tree.
+
+Do not draw four unrelated source-to-destination lines.
+
+---
+
+# HIGH-FANOUT NET PRIORITY
+
+Calculate:
+
+```text
+fanout = number of destinations
+```
+
+High-fanout nets must be placed and routed first.
+
+Priority:
+
+```text
+clock
+reset
+enable
+high-fanout control/data
+normal local signals
+```
+
+For combinational priority logic, high-fanout inputs such as `I3` and generated masks such as `~I3` must receive dedicated routing channels.
+
+---
+
+# COMPONENT PLACEMENT ENGINE
+
+Placement must happen from the dependency graph.
+
+Default horizontal layers:
+
+```text
+Layer 0:
+Primary inputs
+
+Layer 1:
+Input conditioning / NOT
+
+Layer 2:
+AND / XOR / arithmetic terms
+
+Layer 3:
+OR / MUX / decoder combination logic
+
+Layer 4:
+Registers / flip-flops
+
+Layer 5:
+Output logic
+
+Layer 6:
+Primary outputs
+```
+
+Do NOT place all components first and then try to force wires between them.
+
+Placement must be influenced by the net topology.
+
+---
+
+# ITERATIVE PLACEMENT + ROUTING
+
+Use an iterative optimization loop:
+
+```text
+Initial placement
+↓
+Route all nets
+↓
+Measure congestion/crossings/bends
+↓
+Move congested components
+↓
+Route again
+↓
+Score layout
+↓
+Keep best layout
+```
+
+The layout score should heavily penalize electrical ambiguity.
+
+Conceptual cost:
+
+```text
+cost =
+    component_collision × 1,000,000
+  + incorrect_connection × 1,000,000
+  + ambiguous_crossing × 500,000
+  + unintended_junction × 500,000
+  + net_crossing × 50,000
+  + label_overlap × 20,000
+  + bend_count × 50
+  + total_wire_length
+```
+
+Correctness always has priority over compactness.
+
+---
+
+# PIN-AWARE COMPONENT GEOMETRY
+
+Every symbol must expose explicit electrical pin coordinates.
+
+For example:
+
+```text
+AND1.IN0
+AND1.IN1
+AND1.OUT
+```
+
+must each have exact coordinates.
+
+A wire is valid only when it terminates at one of these pins or at an explicitly defined junction.
+
+A wire ending near a gate is NOT considered connected.
+
+---
+
+# STANDARD PIN GEOMETRY
+
+For an N-input gate:
+
+```text
+input_pin[i].x = component_left - routing_margin
+input_pin[i].y = evenly distributed around the gate body
+```
+
+The output pin is:
+
+```text
+output_pin.x = component_right + routing_margin
+output_pin.y = gate_center
+```
+
+The gate drawing and routing engine must use the SAME pin coordinates.
+
+---
+
+# ROUTING ENGINE
+
+Use a **Manhattan/orthogonal router**.
+
+Preferred geometry:
+
+```text
+horizontal
+vertical
+horizontal
+```
+
+Avoid diagonal wires.
+
+Routing must consider obstacles:
+
+```text
+gate bodies
+flip-flop bodies
+MUX bodies
+labels
+terminals
+other nets
+routing channels
+```
+
+A wire must never pass through another component.
+
+---
+
+# GLOBAL ROUTING CHANNELS
+
+Reserve channels before routing.
+
+Conceptual structure:
+
+```text
+INPUT CHANNELS
+────────────────────────────────────────
+
+CONTROL / FAN-OUT CHANNELS
+────────────────────────────────────────
+
+LOGIC CHANNELS
+────────────────────────────────────────
+
+OUTPUT CHANNELS
+────────────────────────────────────────
+```
+
+A high-fanout net gets a dedicated trunk.
+
+This is mandatory for signals such as:
+
+```text
+I3
+I2
+I1
+I0
+~I3
+~I2
+CLK
+RESET
+ENABLE
+```
+
+where applicable.
+
+---
+
+# WHOLE-NET ROUTING
+
+Route a complete net as a tree.
+
+Do NOT route edges independently.
+
+For example:
+
+```text
+I3 → NOT3
+I3 → OR_Y1
+I3 → OR_Y0
+I3 → OR_VALID
+```
+
+must be solved as one routing problem.
+
+The router may share trunk segments.
+
+The final result should look like:
+
+```text
+             ┌────────────► OR_Y1
+             │
+I3 ─────●────┼────────────► OR_Y0
+        │    │
+        │    └────────────► OR_VALID
+        │
+        └─────────────────► NOT3
+```
+
+---
+
+# CROSSING MINIMIZATION
+
+For small digital circuits:
+
+```text
+TARGET_UNNECESSARY_CROSSINGS = 0
+TARGET_BRIDGES = 0
+```
+
+The router must first attempt:
+
+1. Alternate routing channel.
+2. Alternate branch point.
+3. Alternate destination channel.
+4. Small component movement.
+5. Reroute neighboring nets.
+6. Re-run global optimization.
+
+Only when no clean layout can be found should a bridge be considered.
+
+---
+
+# BRIDGE RULE
+
+A bridge is a LAST RESORT.
+
+Never use:
+
+```text
+collision
+→ automatically add bridge
+```
+
+Instead:
+
+```text
+collision
+↓
+reroute net
+↓
+change channel
+↓
+move branch point
+↓
+move component
+↓
+reroute neighboring net
+↓
+only then bridge
+```
+
+For small combinational textbook circuits, the preferred result is ZERO bridges.
+
+---
+
+# CROSSING SEMANTICS
+
+A crossing must be one of exactly two types.
+
+## Electrically connected
+
+```text
+──────●──────
+      │
+      │
+```
+
+Use a junction dot.
+
+## Electrically disconnected
+
+Use a bridge/jumper or route around the crossing:
+
+```text
+──────╮
+      │
+──────╯
+```
+
+No junction dot.
+
+Never leave an ambiguous crossing.
+
+---
+
+# JUNCTION GENERATION
+
+Junctions are generated from the net graph, not visually guessed.
+
+If:
+
+```text
+source → A
+       → B
+       → C
+```
+
+the renderer creates a junction because the net graph contains a branch.
+
+Do not create junctions merely because two SVG paths happen to overlap.
+
+---
+
+# NET CROSSING DRC
+
+After routing, detect all pairwise net intersections.
+
+For each intersection:
+
+```text
+if same_net:
+    allowed
+elif junction_defined:
+    connected
+elif bridge_defined:
+    explicitly disconnected
+else:
+    ERROR
+```
+
+Any ambiguous crossing is a schematic DRC failure.
+
+---
+
+# COMPONENT COLLISION DRC
+
+Reject any layout where:
+
+```text
+component A bounding box
+overlaps
+component B bounding box
+```
+
+unless the overlap is explicitly intentional.
+
+---
+
+# WIRE-COMPONENT DRC
+
+Reject wires that intersect:
+
+- gate body
+- flip-flop body
+- MUX body
+- input terminal
+- output terminal
+- annotation text
+
+unless the endpoint is an explicitly defined connection.
+
+---
+
+# WIRE-PIN DRC
+
+Every wire endpoint must satisfy:
+
+```text
+source endpoint = defined output/source/junction
+destination endpoint = defined input/output/junction
+```
+
+No wire may terminate in empty space.
+
+---
+
+# OUTPUT DRC
+
+For every primary output:
+
+```text
+exactly one valid source net
+```
+
+unless the RTL-derived hardware explicitly requires another topology.
+
+---
+
+# INPUT DRC
+
+Every primary input must connect to all destinations specified by the net graph.
+
+For example:
+
+```text
+I3 fanout count = 4
+```
+
+means four actual destinations must exist in the routed schematic.
+
+---
+
+# SVG CONNECTIVITY RECONSTRUCTION
+
+After SVG generation, reconstruct the electrical graph from:
+
+- pin IDs
+- net IDs
+- wire endpoints
+- junction IDs
+- bridge IDs
+
+Compare reconstructed connectivity with the original hardware net graph.
+
+Example:
+
+```text
+EXPECTED:
+I3 → NOT3.IN
+I3 → OR_Y1.IN0
+I3 → OR_Y0.IN0
+I3 → OR_VALID.IN0
+
+ACTUAL:
+I3 → NOT3.IN
+I3 → OR_Y1.IN0
+I3 → OR_Y0.IN0
+I3 → OR_VALID.IN0
+```
+
+If any destination differs:
+
+```text
+SCHEMATIC INVALID
+```
+
+Regenerate.
+
+---
+
+# DO NOT USE COORDINATES AS CONNECTIVITY
+
+This is an absolute rule.
+
+Never infer:
+
+```text
+two paths visually touch
+=
+electrical connection
+```
+
+Connectivity is defined only by the net graph.
+
+SVG geometry is merely its visual realization.
+
+---
+
+# DEBUG RENDER MODE
+
+Before final rendering, optionally generate an internal debug SVG.
+
+Use temporary colors by net:
+
+```text
+I3  = red
+I2  = blue
+I1  = green
+I0  = orange
+~I3 = purple
+~I2 = cyan
+```
+
+This is only for internal validation.
+
+The final user-facing schematic should return to a professional monochrome engineering style.
+
+---
+
+# SCHEMATIC DRC
+
+The agent must perform a mini Design Rule Check before accepting the diagram.
+
+Check:
+
+```text
+[ ] every input exists
+[ ] every output exists
+[ ] every component exists
+[ ] every pin exists
+[ ] every net exists
+[ ] every net has correct source
+[ ] every net reaches all destinations
+[ ] no unconnected gate input
+[ ] no floating output
+[ ] no unintended short
+[ ] no ambiguous crossing
+[ ] all fan-out branches have valid junctions
+[ ] no component collision
+[ ] no wire through component
+[ ] no label collision
+[ ] no wire ending in empty space
+[ ] no off-canvas geometry
+```
+
+If any electrical error exists:
+
+```text
+DO NOT WRITE THEORY.MD
+```
+
+Regenerate the schematic first.
+
+---
+
+# SCHEMATIC OPTIMIZATION LOOP
+
+Use:
+
+```text
+attempt = 1
+
+while attempt <= MAX_ATTEMPTS:
+
+    build_layout()
+    route_all_nets()
+    run_drc()
+    calculate_visual_score()
+
+    if DRC == PASS:
+        inspect_preview()
+        if preview == PASS:
+            accept
+            break
+
+    modify_layout()
+    attempt += 1
+```
+
+Use a sensible maximum attempt count such as 10–30 depending on circuit complexity.
+
+If all attempts fail, use a higher abstraction level rather than outputting an electrically ambiguous schematic.
+
+---
+
+# VALID NETWORK SPECIAL RULE
+
+For circuits such as priority encoders, encoders, decoders and other circuits with a large OR reduction:
+
+Do not route all inputs through a large shared maze.
+
+Prefer:
+
+```text
+Input terminals
+   ↓
+Dedicated input channels
+   ↓
+Short branches
+   ↓
+Reduction gate
+   ↓
+Output
+```
+
+The reduction gate should be placed relative to the incoming channels.
+
+---
+
+# PRIORITY ENCODER SPECIAL RULE
+
+For:
+
+```text
+I3 > I2 > I1 > I0
+```
+
+the renderer should naturally create:
+
+```text
+I3
+ │
+ ├──► NOT → ~I3 ──┬──► AND(I2)
+ │                 │
+ │                 └──► AND(~I2,I1)
+ │
+ ├────────────────────► OR(Y1)
+ │
+ └────────────────────► OR(Y0)
+
+I2 ────────────────────► valid OR
+I1 ────────────────────► valid OR
+I0 ────────────────────► valid OR
+```
+
+with actual graphical gates and clean routing.
+
+Do not force this exact coordinate arrangement.
+
+The topology is the important part.
+
+---
+
+# SVG GENERATION
+
+Only after the schematic passes DRC should the renderer create the final polished SVG.
+
+The SVG must contain:
+
+```xml
+<g id="components">
+<g id="nets">
+<g id="junctions">
+<g id="labels">
+```
+
+Each component should have a stable ID.
+
+For example:
+
+```text
+AND1
+OR_Y1
+NOT3
+DFF0
+MUX1
+```
+
+Each net should have an ID:
+
+```text
+net_I3
+net_nI3
+net_term1
+```
+
+---
+
+# PREVIEW VALIDATION
+
+Render the final SVG to PNG when a renderer is available.
+
+Inspect:
+
+```text
+gate placement
+pin alignment
+wire routing
+junctions
+bridges
+labels
+clipping
+spacing
+```
+
+If a human reader cannot trace an input to an output without guessing, reject the schematic.
+
+---
+
+# FINAL ACCEPTANCE STANDARD
+
+A schematic is accepted only if:
+
+```text
+logical correctness
++
+electrical connectivity correctness
++
+geometrical correctness
++
+visual readability
+```
+
+all pass.
+
+A beautiful but electrically incorrect schematic is a FAILURE.
+
+A correct but visually ambiguous schematic is also a FAILURE.
+
+---
+
+
+# ABSOLUTE SCHEMATIC ENGINE RULES
+
+The following rules override any weaker earlier diagram instructions:
+
+1. **Netlist before coordinates.**
+2. **Connectivity before aesthetics.**
+3. **Route complete nets, not isolated edges.**
+4. **Use pin-aware routing.**
+5. **Use dedicated channels for high-fanout nets.**
+6. **Prefer zero crossings for small logic circuits.**
+7. **Bridges are a last resort, never the default collision repair.**
+8. **Never infer electrical connectivity from SVG path proximity.**
+9. **Run schematic DRC before accepting the SVG.**
+10. **Reject and regenerate any electrically ambiguous SVG.**
+11. **Use temporary color-coded debug rendering when diagnosing net collisions.**
+12. **A theory document must never be written with a failed schematic DRC.**
 
 # SVG CIRCUIT STYLE
 
@@ -1377,22 +2333,36 @@ Never claim a synthesized implementation unless synthesis evidence exists.
 
 # OUTPUT CONTRACT
 
-Exactly two files:
+Generate only the file(s) selected by the user in STEP 0.
+
+### Theory only
+
+```text
+<project_name>_theory.md
+```
+
+### Report only
+
+```text
+<project_name>_report.md
+```
+
+### Both
 
 ```text
 <project_name>_report.md
 <project_name>_theory.md
 ```
 
-No additional report files.
+No additional documentation files.
 
 No HTML report.
 
 No PDF.
 
-No separate diagram file.
+No separate diagram file unless explicitly requested.
 
-The SVG schematic must be embedded in:
+When Theory is selected, the validated SVG schematic must be embedded in:
 
 ```text
 <project_name>_theory.md
@@ -1460,13 +2430,24 @@ Before finishing, verify:
 [ ] Sequential elements represented correctly
 [ ] Clock/reset represented correctly
 [ ] Signal connections match RTL
+[ ] Complete electrical net graph constructed
+[ ] Fan-out handled with explicit junctions
+[ ] Routing channels assigned
+[ ] Pins and wires align exactly
+[ ] No unintended crossings
+[ ] Any remaining crossing is explicitly connected or bridged
+[ ] No wire passes through a component
+[ ] No wire terminates in empty space
+[ ] Schematic DRC passes with zero electrical errors
+[ ] SVG XML is valid
+[ ] PNG preview visually inspected
 [ ] Theory explains the actual circuit
 [ ] Code matches source exactly
-[ ] Exactly two Markdown files created
+[ ] Exactly the requested documentation files created
 ```
 
 # Handoff Rules
 
 This agent has no outgoing handoffs.
 
-It produces the final documentation artifacts only.
+It produces only the documentation artifact(s) selected by the user.

@@ -39,4 +39,4 @@ endmodule
 
 ## Conclusion
 
-The 1-bit full subtractor was successfully implemented using Verilog dataflow modeling. The XOR network produces the difference, and the borrow equation correctly identifies when subtraction requires a borrow. Exact synthesis and timing results were not measured.
+The 1-bit full subtractor was successfully implemented using Verilog dataflow modeling. The XOR network produces the difference, and the borrow equation correctly identifies when subtraction requires a borrow. 

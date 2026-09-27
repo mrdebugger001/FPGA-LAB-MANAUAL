@@ -38,4 +38,4 @@ endmodule
 
 ## Conclusion
 
-The 1-bit full adder was successfully implemented using Verilog dataflow modeling. The `Sum` output correctly represents odd input parity, and the `Carry` output is high whenever at least two inputs are high. Exact synthesis and timing results were not measured.
+The 1-bit full adder was successfully implemented using Verilog dataflow modeling. The `Sum` output correctly represents odd input parity, and the `Carry` output is high whenever at least two inputs are high.

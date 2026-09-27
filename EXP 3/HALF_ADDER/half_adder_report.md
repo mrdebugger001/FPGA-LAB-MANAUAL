@@ -33,4 +33,4 @@ endmodule
 
 ## Conclusion
 
-The 1-bit half adder was successfully implemented using Verilog dataflow modeling. XOR generates the sum and AND generates the carry. Exact synthesis and timing results were not measured.
+The 1-bit half adder was successfully implemented using Verilog dataflow modeling. XOR generates the sum and AND generates the carry. 

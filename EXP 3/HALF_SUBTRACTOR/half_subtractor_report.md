@@ -33,4 +33,4 @@ endmodule
 
 ## Conclusion
 
-The 1-bit half subtractor was successfully implemented using Verilog dataflow modeling. XOR generates the difference, while the inverted minuend combined with the subtrahend generates the borrow. Exact synthesis and timing results were not measured.
+The 1-bit half subtractor was successfully implemented using Verilog dataflow modeling. XOR generates the difference, while the inverted minuend combined with the subtrahend generates the borrow. 
